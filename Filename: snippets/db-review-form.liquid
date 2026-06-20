@@ -1,1 +1,171 @@
 
+{% comment %}
+  Dal Bhaat — Write a Review Form Snippet
+  File: snippets/db-review-form.liquid
+{% endcomment %}
+
+<style>
+  .dbrf { max-width: 900px; margin: 2.5rem auto 0; padding: 0 1.5rem 2.5rem; border-top: 1px solid rgba(128,128,128,.15); }
+  .dbrf__toggle-btn { display: inline-flex; align-items: center; gap: .55rem; margin: 1.75rem 0 0; padding: .7rem 1.6rem; background: #2b1a0e; color: #f5efe6; border: none; border-radius: 6px; font-size: .95rem; font-weight: 600; letter-spacing: .03em; cursor: pointer; transition: background .18s, transform .12s; }
+  .dbrf__toggle-btn:hover { background: #3d2510; transform: translateY(-1px); }
+  .dbrf__toggle-btn svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
+  .dbrf__panel { display: none; margin-top: 1.5rem; padding: 1.75rem 1.75rem 2rem; background: #fdf9f4; border: 1px solid rgba(192,136,59,.22); border-radius: 10px; animation: dbrf-slide-in .22s ease; }
+  .dbrf__panel.is-open { display: block; }
+  @keyframes dbrf-slide-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  .dbrf__title { font-size: 1.15rem; font-weight: 700; margin: 0 0 1.25rem; color: #1a1008; }
+  .dbrf__stars { display: flex; gap: 4px; margin-bottom: 1.25rem; flex-direction: row-reverse; width: fit-content; }
+  .dbrf__stars input { display: none; }
+  .dbrf__stars label { cursor: pointer; line-height: 1; }
+  .dbrf__stars label svg { width: 34px; height: 34px; fill: rgba(128,128,128,.2); transition: fill .12s; }
+  .dbrf__stars input:checked ~ label svg, .dbrf__stars label:hover svg, .dbrf__stars label:hover ~ label svg { fill: #c0883b; }
+  .dbrf__star-label { font-size: .82rem; color: #888; margin-bottom: 1.1rem; display: block; min-height: 1.1em; }
+  .dbrf__row { margin-bottom: 1.05rem; }
+  .dbrf__label { display: block; font-size: .82rem; font-weight: 600; color: #4a3620; margin-bottom: .35rem; letter-spacing: .02em; }
+  .dbrf__label span { color: #c0883b; }
+  .dbrf__input, .dbrf__textarea { width: 100%; padding: .65rem .85rem; border: 1.5px solid rgba(128,128,128,.25); border-radius: 6px; font-size: .95rem; background: #fff; color: #1a1008; font-family: inherit; transition: border-color .15s, box-shadow .15s; box-sizing: border-box; }
+  .dbrf__input:focus, .dbrf__textarea:focus { outline: none; border-color: #c0883b; box-shadow: 0 0 0 3px rgba(192,136,59,.12); }
+  .dbrf__textarea { resize: vertical; min-height: 110px; }
+  .dbrf__char-count { text-align: right; font-size: .75rem; color: #aaa; margin-top: .2rem; }
+  .dbrf__submit { display: inline-flex; align-items: center; gap: .5rem; margin-top: .5rem; padding: .75rem 2rem; background: #c0883b; color: #fff; border: none; border-radius: 6px; font-size: 1rem; font-weight: 700; letter-spacing: .03em; cursor: pointer; transition: background .18s, transform .12s; }
+  .dbrf__submit:hover:not(:disabled) { background: #a8722e; transform: translateY(-1px); }
+  .dbrf__submit:disabled { opacity: .6; cursor: not-allowed; }
+  .dbrf__submit .spinner { display: none; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: dbrf-spin .6s linear infinite; }
+  @keyframes dbrf-spin { to { transform: rotate(360deg); } }
+  .dbrf__msg { display: none; margin-top: 1rem; padding: .75rem 1rem; border-radius: 6px; font-size: .9rem; font-weight: 500; }
+  .dbrf__msg.success { background: #f0faf0; color: #2a6e2a; border: 1px solid #b5ddb5; display: block; }
+  .dbrf__msg.error { background: #fff3f3; color: #b33; border: 1px solid #f5b5b5; display: block; }
+  .dbrf__required-note { font-size: .78rem; color: #aaa; margin-bottom: 1rem; }
+</style>
+
+<div class="dbrf" id="db-write-review">
+  <button class="dbrf__toggle-btn" id="dbrf-open" aria-expanded="false" aria-controls="dbrf-panel">
+    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+    Write a Review
+  </button>
+
+  <div class="dbrf__panel" id="dbrf-panel" role="form" aria-label="Write a review">
+    <p class="dbrf__title">Share your experience 🌾</p>
+    <p class="dbrf__required-note"><span style="color:#c0883b">*</span> Required</p>
+
+    <div class="dbrf__row">
+      <label class="dbrf__label">Your rating <span>*</span></label>
+      <div class="dbrf__stars" role="radiogroup" aria-label="Rating">
+        <input type="radio" name="dbrf_rating" id="dbrf_star5" value="5"><label for="dbrf_star5" aria-label="5 stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></label>
+        <input type="radio" name="dbrf_rating" id="dbrf_star4" value="4"><label for="dbrf_star4" aria-label="4 stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></label>
+        <input type="radio" name="dbrf_rating" id="dbrf_star3" value="3"><label for="dbrf_star3" aria-label="3 stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></label>
+        <input type="radio" name="dbrf_rating" id="dbrf_star2" value="2"><label for="dbrf_star2" aria-label="2 stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></label>
+        <input type="radio" name="dbrf_rating" id="dbrf_star1" value="1"><label for="dbrf_star1" aria-label="1 star"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></label>
+      </div>
+      <span class="dbrf__star-label" id="dbrf-star-hint">Tap to rate</span>
+    </div>
+
+    <div class="dbrf__row">
+      <label class="dbrf__label" for="dbrf_name">Your name <span>*</span></label>
+      <input class="dbrf__input" type="text" id="dbrf_name" placeholder="e.g. Priya from Delhi" maxlength="80" autocomplete="name">
+    </div>
+
+    <div class="dbrf__row">
+      <label class="dbrf__label" for="dbrf_title">Review title</label>
+      <input class="dbrf__input" type="text" id="dbrf_title" placeholder="e.g. Best masoor I've had!" maxlength="120">
+    </div>
+
+    <div class="dbrf__row">
+      <label class="dbrf__label" for="dbrf_body">Your review <span>*</span></label>
+      <textarea class="dbrf__textarea" id="dbrf_body" placeholder="Tell us what you cooked, how it tasted…" maxlength="2000"></textarea>
+      <div class="dbrf__char-count"><span id="dbrf-chars">0</span> / 2000</div>
+    </div>
+
+    <button class="dbrf__submit" id="dbrf-submit" type="button">
+      <span class="spinner" id="dbrf-spinner"></span>
+      Submit Review
+    </button>
+
+    <div class="dbrf__msg" id="dbrf-msg"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var ENDPOINT   = 'https://script.google.com/macros/s/AKfycbxkEoDu6a7R9I58qW8JnAS5RBRMFeh2UdLpiZl0V74Y2bwGdY1uibc9ZJ_QKSjPh3h2/exec';
+  var SECRET     = 'dalbhaat2024';
+  var PRODUCT_ID = '{{ product.id }}';
+
+  var starLabels = ['','Terrible','Poor','Okay','Good','Excellent!'];
+  var toggleBtn  = document.getElementById('dbrf-open');
+  var panel      = document.getElementById('dbrf-panel');
+  var submitBtn  = document.getElementById('dbrf-submit');
+  var spinner    = document.getElementById('dbrf-spinner');
+  var msgEl      = document.getElementById('dbrf-msg');
+  var bodyEl     = document.getElementById('dbrf_body');
+  var charsEl    = document.getElementById('dbrf-chars');
+  var hintEl     = document.getElementById('dbrf-star-hint');
+
+  toggleBtn.addEventListener('click', function(){
+    var open = panel.classList.toggle('is-open');
+    toggleBtn.setAttribute('aria-expanded', open);
+    if(open){ panel.scrollIntoView({behavior:'smooth', block:'nearest'}); }
+  });
+
+  bodyEl.addEventListener('input', function(){
+    charsEl.textContent = bodyEl.value.length;
+  });
+
+  document.querySelectorAll('input[name="dbrf_rating"]').forEach(function(r){
+    r.addEventListener('change', function(){
+      hintEl.textContent = starLabels[parseInt(r.value)] || '';
+    });
+  });
+
+  submitBtn.addEventListener('click', function(){
+    msgEl.className = 'dbrf__msg';
+    msgEl.textContent = '';
+
+    var rating = document.querySelector('input[name="dbrf_rating"]:checked');
+    var name   = document.getElementById('dbrf_name').value.trim();
+    var title  = document.getElementById('dbrf_title').value.trim();
+    var body   = bodyEl.value.trim();
+
+    if(!rating){ showMsg('error','Please select a star rating.'); return; }
+    if(!name)  { showMsg('error','Please enter your name.');      return; }
+    if(!body)  { showMsg('error','Please write your review.');    return; }
+
+    submitBtn.disabled = true;
+    spinner.style.display = 'inline-block';
+    submitBtn.lastChild.textContent = ' Submitting…';
+
+    fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ product_id: PRODUCT_ID, name: name, rating: parseInt(rating.value), title: title, review: body, secret: SECRET })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      spinner.style.display = 'none';
+      submitBtn.disabled = false;
+      submitBtn.lastChild.textContent = ' Submit Review';
+      if(data.success){
+        showMsg('success','🙏 Thank you! Your review is now live.');
+        document.querySelector('input[name="dbrf_rating"]:checked').checked = false;
+        document.getElementById('dbrf_name').value  = '';
+        document.getElementById('dbrf_title').value = '';
+        bodyEl.value = ''; charsEl.textContent = '0';
+        hintEl.textContent = 'Tap to rate';
+      } else {
+        showMsg('error', data.error || 'Something went wrong. Please try again.');
+      }
+    })
+    .catch(function(){
+      spinner.style.display = 'none';
+      submitBtn.disabled = false;
+      submitBtn.lastChild.textContent = ' Submit Review';
+      showMsg('error','Network error. Please try again.');
+    });
+  });
+
+  function showMsg(type, text){
+    msgEl.className = 'dbrf__msg ' + type;
+    msgEl.textContent = text;
+    msgEl.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+})();
+</script>
